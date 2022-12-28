@@ -21,56 +21,27 @@ function App() {
       // get a callback when the server responds
       xhr.addEventListener("load", () => {
         // update the state of the component with the result here
-        // console.log(xhr.response);
         let result = JSON.parse(xhr.response);
-        console.log(result);
-        document.getElementById("display-text").innerHTML = "";
+        populateResults(result);
+
+        let authorSelect = document.getElementById("author-select");
+        authorSelect.innerHTML = "";
+
+        let defaultOption = document.createElement("option");
+        defaultOption.innerHTML = selectAuthorText;
+        authorSelect.appendChild(defaultOption);
+        // console.log(result);
         if (result?.length) {
-          result.map(poem => console.log(poem.linecount));
-          let displayText = document.getElementById("display-text");
-          for (let poem of result) {
-            let title = document.createElement("p");
-            title.innerHTML = poem.title;
-            displayText.appendChild(title);
-
-            let author = document.createElement("p");
-            author.innerHTML = "By " + poem.author;
-            authorSet.add(poem.author);
-            displayText.appendChild(author);
-
-
-            let lines = document.createElement("p");
-            lines.innerHTML = poem.lines.join("<br>");
-            displayText.appendChild(lines);
-            console.log(poem);
-          }
+          result.map(poem => authorSet.add(poem.author));
 
           authors = Array.from(authorSet).sort();
           console.log(authors);
-
-          let authorSelect = document.getElementById("author-select");
-          authorSelect.innerHTML = "";
-
-          let defaultOption = document.createElement("option");
-          defaultOption.innerHTML = selectAuthorText;
-          authorSelect.appendChild(defaultOption);
-          for(let author of authors){
+          for (let author of authors) {
             let authorOption = document.createElement("option");
             authorOption.innerHTML = author;
             authorSelect.appendChild(authorOption);
           }
-
-          document.getElementById("results-count").innerHTML = result.length + " poem" + (result.length == 1 ? " was" : "s were") + " found with this title";
-
-
-        } else {
-          document.getElementById("results-count").innerHTML = "No poems were found with this title";
-        }
-        
-
-
-        // xhr.open("GET", "https://poetrydb.org/title,author/" + searchBox.value + ";" + Array.from(authors).sort()[0]);
-        // xhr.send();
+        } 
       })
       // open the request with the verb and the url
       xhr.open("GET", "https://poetrydb.org/title/" + searchBox.value);
@@ -91,43 +62,37 @@ function App() {
         // update the state of the component with the result here
         // console.log(xhr.response);
         let result = JSON.parse(xhr.response);
-        console.log(result);
-        document.getElementById("display-text").innerHTML = "";
-        if (result?.length) {
-          result.map(poem => console.log(poem.linecount));
-          let displayText = document.getElementById("display-text");
-          for (let poem of result) {
-            let title = document.createElement("p");
-            title.innerHTML = poem.title;
-            displayText.appendChild(title);
-
-            let author = document.createElement("p");
-            author.innerHTML = "By " + poem.author;
-            displayText.appendChild(author);
-
-
-            let lines = document.createElement("p");
-            lines.innerHTML = poem.lines.join("<br>");
-            displayText.appendChild(lines);
-            console.log(poem);
-          }
-
-          console.log(authors);          
-
-          document.getElementById("results-count").innerHTML = result.length + " poem" + (result.length == 1 ? " was" : "s were") + " found with this title";
-
-
-        } else {
-          document.getElementById("results-count").innerHTML = "No poems were found with this title";
-        }
-        
-
-
+        populateResults(result);
+        document.getElementById("results-count").innerHTML += " by " + e.target.value;
       })
       // open the request with the verb and the url
       xhr.open("GET", "https://poetrydb.org/title,author/" + searchBox.value + ";" + e.target.value);
       // send the request
       xhr.send();
+    }
+  }
+
+  function populateResults(result) {
+    document.getElementById("display-text").innerHTML = "";
+    if (result?.length) {
+      let displayText = document.getElementById("display-text");
+      for (let poem of result) {
+        let title = document.createElement("p");
+        title.innerHTML = poem.title;
+        displayText.appendChild(title);
+
+        let author = document.createElement("p");
+        author.innerHTML = "By " + poem.author;
+        displayText.appendChild(author);
+
+        let lines = document.createElement("p");
+        lines.innerHTML = poem.lines.join("<br>");
+        displayText.appendChild(lines);
+      }
+
+      document.getElementById("results-count").innerHTML = result.length + " poem" + (result.length == 1 ? " was" : "s were") + " found with this title";
+    } else {
+      document.getElementById("results-count").innerHTML = "No poems were found with this title";
     }
   }
 
