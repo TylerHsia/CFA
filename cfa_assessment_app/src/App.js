@@ -7,6 +7,7 @@ function App() {
   // create a new XMLHttpRequest
 
   let authors = [];
+  const [authorsState, setAthorsState] = useState(null);
   const [resultState, setResultsState] = useState([]);
 
 
@@ -17,29 +18,18 @@ function App() {
     console.log(searchBox.value);
 
     if (searchBox.value) {
-      document.getElementById("results-count").innerHTML = "";
+      document.getElementById("results-count").innerHTML = "Loading...";
+      setAthorsState(["All authors"]);
+      document.getElementById("author-select").selectedIndex = 0;
       setResultsState([]);
       let authorSet = new Set();
       xhr.addEventListener("load", () => {
         let result = JSON.parse(xhr.response);
         populateResults(result);
-
-        let authorSelect = document.getElementById("author-select");
-        authorSelect.innerHTML = "";
-
-        let defaultOption = document.createElement("option");
-        defaultOption.innerHTML = "All authors";
-        authorSelect.appendChild(defaultOption);
         if (result?.length) {
           result.map(poem => authorSet.add(poem.author));
-          authors = Array.from(authorSet).sort();
-          console.log(authors);
-          for (let author of authors) {
-            let authorOption = document.createElement("option");
-            authorOption.innerHTML = author;
-            authorSelect.appendChild(authorOption);
-          }
-        }
+          setAthorsState(["All authors"].concat(Array.from(authorSet).sort()));
+        } 
       })
       xhr.open("GET", "https://poetrydb.org/title/" + searchBox.value);
       xhr.send();
@@ -54,24 +44,24 @@ function App() {
     console.log(e.target.id);
     console.log(e.target.selectedIndex);
     if (searchBox.value && e?.target?.value) {
-      if(e.target.selectedIndex === 0){
+      if (e.target.selectedIndex === 0) {
         console.log("equal");
         xhr.open("GET", "https://poetrydb.org/title/" + searchBox.value);
       } else {
         console.log("not equal");
         xhr.open("GET", "https://poetrydb.org/title,author/" + searchBox.value + ";" + e.target.value);
       }
-      document.getElementById("results-count").innerHTML = "";
+      document.getElementById("results-count").innerHTML = "Loading...";
       setResultsState([]);
       xhr.addEventListener("load", () => {
         // console.log(xhr.response);
         let result = JSON.parse(xhr.response);
         populateResults(result);
-        if(e.target.selectedIndex !== 0){
+        if (e.target.selectedIndex !== 0) {
           document.getElementById("results-count").innerHTML += " by " + e.target.value;
         }
       })
-      
+
       xhr.send();
     }
   }
@@ -90,18 +80,26 @@ function App() {
 
   return (
     <div className="App">
-      <h3>Hello and welcome to Tyler's Poem Library!</h3>
-      <div className="search-bar">
-        <input type="text" placeholder='type here' id="search-box"></input>
-        <button id="search-button" type="button" onClick={() => searchClick()}>
+      <p className="Title">Hello and Welcome to Tyler's Poem Library!</p>
+      <div className="input-bar horizontal">
+        <select className="form-select" aria-label="Default select example" id="author-select" onChange={(e) => authorSelect(e)}>
+          {authorsState === null ?
+            <option>Make a search to enable author selection</option> :
+            authorsState.map((author, index) => <option key={index} value={author}>{author}</option>)
+          }
+
+        </select>
+        {/* <div className="horizontal"> */}
+        <input type="text" className="input-text-box" placeholder='Type poem title here' id="search-box"></input>
+        <button className="search-button" id="search-button" type="button" onClick={() => searchClick()}>
           <i className="fa fa-search" aria-hidden="true"></i>
         </button>
-        <select className="form-select" aria-label="Default select example" id="author-select" onChange={(e) => authorSelect(e)}>
-          <option>Make a search to enable author selection</option>
-        </select>
+        {/* </div> */}
+
+
       </div>
 
-      <p id="results-count">
+      <p className="results-count" id="results-count">
         No search has been performed
       </p>
       <div className="accordion" id="accordion">
