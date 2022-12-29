@@ -6,18 +6,11 @@ body{
 .App {
   padding: 2%;
   text-align: center;
-  min-width: 300px;
-  min-height: 200%;
+  min-width: 200px;
 }
 
 .Title{
   font-size: calc(10px + 2vmin);
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
 }
 
 .App-header {
@@ -33,12 +26,12 @@ body{
 .horizontal {
   display: flex;
   flex-direction: row;
-  flex-wrap: nowrap;
 }
 
 .input-bar {
   justify-content: center;
   margin-bottom: 0.7%;
+  flex-wrap: wrap;
   gap: 0.5%;
 }
 
