@@ -23,10 +23,7 @@ function App() {
       document.getElementById("results-count").innerHTML = "";
       setResultsState([]);
       let authorSet = new Set();
-      document.getElementById("display-text").innerHTML = "loading";
-      // get a callback when the server responds
       xhr.addEventListener("load", () => {
-        // update the state of the component with the result here
         let result = JSON.parse(xhr.response);
         populateResults(result);
 
@@ -36,7 +33,6 @@ function App() {
         let defaultOption = document.createElement("option");
         defaultOption.innerHTML = selectAuthorText;
         authorSelect.appendChild(defaultOption);
-        // console.log(result);
         if (result?.length) {
           result.map(poem => authorSet.add(poem.author));
           authors = Array.from(authorSet).sort();
@@ -49,9 +45,7 @@ function App() {
           }
         }
       })
-      // open the request with the verb and the url
       xhr.open("GET", "https://poetrydb.org/title/" + searchBox.value);
-      // send the request
       xhr.send();
     }
   }
@@ -64,40 +58,20 @@ function App() {
     if (searchBox.value && e?.target?.value && e.target.value !== selectAuthorText) {
       document.getElementById("results-count").innerHTML = "";
       setResultsState([]);
-      document.getElementById("display-text").innerHTML = "loading";
-      // get a callback when the server responds
       xhr.addEventListener("load", () => {
-        // update the state of the component with the result here
         // console.log(xhr.response);
         let result = JSON.parse(xhr.response);
         populateResults(result);
         document.getElementById("results-count").innerHTML += " by " + e.target.value;
       })
-      // open the request with the verb and the url
       xhr.open("GET", "https://poetrydb.org/title,author/" + searchBox.value + ";" + e.target.value);
-      // send the request
       xhr.send();
     }
   }
 
   function populateResults(result) {
     console.log(resultState);
-    document.getElementById("display-text").innerHTML = "";
     if (result?.length) {
-      // let displayText = document.getElementById("display-text");
-      // for (let poem of result) {
-      //   let title = document.createElement("p");
-      //   title.innerHTML = poem.title;
-      //   displayText.appendChild(title);
-
-      //   let author = document.createElement("p");
-      //   author.innerHTML = "By " + poem.author;
-      //   displayText.appendChild(author);
-
-      //   let lines = document.createElement("p");
-      //   lines.innerHTML = poem.lines.join("<br>");
-      //   displayText.appendChild(lines);
-      // }
       setResultsState(result);
       document.getElementById("results-count").innerHTML = result.length + " poem" + (result.length == 1 ? " was" : "s were") + " found with this title";
     } else {
@@ -120,39 +94,9 @@ function App() {
         <option>Make a search to enable author selection</option>
       </select>
       <p id="results-count">
-        no search has been performed
+        No search has been performed
       </p>
-      {/* {false ? <p>hello</p> : <p>goodbye</p>} */}
-
-
-
-
       <div className="accordion" id="accordion">
-        {/* <div className="accordion-item">
-          <h2 className="accordion-header" id="headingOne">
-            <button className="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="t" aria-controls="collapseOne">
-              Accordion Item #1
-            </button>
-          </h2>
-          <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordion">
-            <div class="accordion-body">
-              <strong>This is the first item's accordion body.</strong> It is shown by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
-            </div>
-          </div>
-        </div>
-        <div class="accordion-item">
-          <h2 class="accordion-header" id="headingTwo">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-              Accordion Item #2
-            </button>
-          </h2>
-          <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordion">
-            <div class="accordion-body">
-              <strong>This is the second item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
-            </div>
-          </div>
-        </div> */}
-
         {resultState.map((poem, index) =>
         (<div key={index} className="accordion-item">
           <h2 className="accordion-header" id="headingOne">
@@ -166,16 +110,6 @@ function App() {
             </div>
           </div>
         </div>))}
-      </div>
-
-
-
-      {/* {authorsState.map((value, index) => (<p key={index}>{value}</p>))} */}
-
-      <div id="display-div">
-        <div id="display-text">
-          <p>Please search something</p>
-        </div>
       </div>
     </div>
   );
