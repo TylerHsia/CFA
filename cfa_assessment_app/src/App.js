@@ -7,11 +7,8 @@ function App() {
   // create a new XMLHttpRequest
 
   let authors = [];
-  const [state, updateState] = useState("Initial Value");
-  const [authorsState, setAuthorsState] = useState(["the", "two"]);
   const [resultState, setResultsState] = useState([]);
 
-  let selectAuthorText = "Select an author";
 
   function searchClick() {
     var xhr = new XMLHttpRequest();
@@ -31,12 +28,11 @@ function App() {
         authorSelect.innerHTML = "";
 
         let defaultOption = document.createElement("option");
-        defaultOption.innerHTML = selectAuthorText;
+        defaultOption.innerHTML = "All authors";
         authorSelect.appendChild(defaultOption);
         if (result?.length) {
           result.map(poem => authorSet.add(poem.author));
           authors = Array.from(authorSet).sort();
-          setAuthorsState(authors);
           console.log(authors);
           for (let author of authors) {
             let authorOption = document.createElement("option");
@@ -55,22 +51,32 @@ function App() {
     let searchBox = document.getElementById("search-box");
     console.log(e);
     console.log(e.target.value);
-    if (searchBox.value && e?.target?.value && e.target.value !== selectAuthorText) {
+    console.log(e.target.id);
+    console.log(e.target.selectedIndex);
+    if (searchBox.value && e?.target?.value) {
+      if(e.target.selectedIndex === 0){
+        console.log("equal");
+        xhr.open("GET", "https://poetrydb.org/title/" + searchBox.value);
+      } else {
+        console.log("not equal");
+        xhr.open("GET", "https://poetrydb.org/title,author/" + searchBox.value + ";" + e.target.value);
+      }
       document.getElementById("results-count").innerHTML = "";
       setResultsState([]);
       xhr.addEventListener("load", () => {
         // console.log(xhr.response);
         let result = JSON.parse(xhr.response);
         populateResults(result);
-        document.getElementById("results-count").innerHTML += " by " + e.target.value;
+        if(e.target.selectedIndex !== 0){
+          document.getElementById("results-count").innerHTML += " by " + e.target.value;
+        }
       })
-      xhr.open("GET", "https://poetrydb.org/title,author/" + searchBox.value + ";" + e.target.value);
+      
       xhr.send();
     }
   }
 
   function populateResults(result) {
-    console.log(resultState);
     if (result?.length) {
       setResultsState(result);
       document.getElementById("results-count").innerHTML = result.length + " poem" + (result.length == 1 ? " was" : "s were") + " found with this title";
@@ -84,15 +90,17 @@ function App() {
 
   return (
     <div className="App">
-      <h1>Title</h1>
-      <input type="text" placeholder='type here' id="search-box"></input>
+      <h3>Hello and welcome to Tyler's Poem Library!</h3>
+      <div className="search-bar">
+        <input type="text" placeholder='type here' id="search-box"></input>
+        <button id="search-button" type="button" onClick={() => searchClick()}>
+          <i className="fa fa-search" aria-hidden="true"></i>
+        </button>
+        <select className="form-select" aria-label="Default select example" id="author-select" onChange={(e) => authorSelect(e)}>
+          <option>Make a search to enable author selection</option>
+        </select>
+      </div>
 
-      <button id="search-button" type="button" onClick={() => searchClick()}>
-        <i className="fa fa-search" aria-hidden="true"></i>
-      </button>
-      <select className="form-select" aria-label="Default select example" id="author-select" onChange={(e) => authorSelect(e)}>
-        <option>Make a search to enable author selection</option>
-      </select>
       <p id="results-count">
         No search has been performed
       </p>
