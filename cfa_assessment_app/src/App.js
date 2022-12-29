@@ -22,6 +22,9 @@ function App() {
       document.getElementById("author-select").selectedIndex = 0;
       setResultsState([]);
       let authorSet = new Set();
+      xhr.addEventListener("error", () => {
+        document.getElementById("results-count").innerHTML = "An error occured while processing your request. Please check your internet connection and try again";
+      });
       xhr.addEventListener("load", () => {
         let result = JSON.parse(xhr.response);
         populateResults(result);
@@ -29,7 +32,7 @@ function App() {
           result.map(poem => authorSet.add(poem.author));
           setAthorsState(["All authors"].concat(Array.from(authorSet).sort()));
         }
-      })
+      });
       xhr.open("GET", "https://poetrydb.org/title/" + searchBox.value);
       xhr.send();
     }
@@ -52,20 +55,23 @@ function App() {
       }
       document.getElementById("results-count").innerHTML = "Loading...";
       setResultsState([]);
+      xhr.addEventListener("error", () => {
+        document.getElementById("results-count").innerHTML = "An error occured while processing your request. Please check your internet connection and try again";
+      });
       xhr.addEventListener("load", () => {
-        // console.log(xhr.response);
         let result = JSON.parse(xhr.response);
         populateResults(result);
         if (e.target.selectedIndex !== 0) {
           document.getElementById("results-count").innerHTML += " by " + e.target.value;
         }
-      })
+      });
 
       xhr.send();
     }
   }
 
   function populateResults(result) {
+    console.log(result);
     if (result?.length) {
       setResultsState(result);
       document.getElementById("results-count").innerHTML = result.length + " poem" + (result.length == 1 ? " was" : "s were") + " found with this title";
