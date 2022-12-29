@@ -6,7 +6,6 @@ function App() {
 
   // create a new XMLHttpRequest
 
-  let authors = [];
   const [authorsState, setAthorsState] = useState(null);
   const [resultState, setResultsState] = useState([]);
 
@@ -29,7 +28,7 @@ function App() {
         if (result?.length) {
           result.map(poem => authorSet.add(poem.author));
           setAthorsState(["All authors"].concat(Array.from(authorSet).sort()));
-        } 
+        }
       })
       xhr.open("GET", "https://poetrydb.org/title/" + searchBox.value);
       xhr.send();
@@ -76,6 +75,10 @@ function App() {
     }
   }
 
+  function titleSelect() {
+    setAthorsState(["All authors"]);
+  }
+
 
 
   return (
@@ -90,7 +93,7 @@ function App() {
 
         </select>
         {/* <div className="horizontal"> */}
-        <input type="text" className="input-text-box" placeholder='Type poem title here' id="search-box"></input>
+        <input type="text" className="input-text-box" placeholder='Type poem title here' id="search-box" onChange={() => titleSelect()}></input>
         <button className="search-button" id="search-button" type="button" onClick={() => searchClick()}>
           <i className="fa fa-search" aria-hidden="true"></i>
         </button>
